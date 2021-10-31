@@ -4,6 +4,13 @@
     Author: Nicholas Kucek
     
     Date Completed: 10/31/21
+    
+    SUMMARY:
+    -3 agent threads
+    -3 pushers
+    -6 smokers: 2 tobacco, 2 papers, 2 matches
+    -Each smoker finishes 3 cigarettes before exiting
+    -Rather than loop forever, each agent loops 6 times, and each pusher 12 times.
 */
 
 
@@ -49,7 +56,7 @@ void * agent(void * arg){
     
     for(;;) {
         
-        sleep(2);
+        sleep(5);
         
         pthread_mutex_lock(&m);
         
@@ -58,6 +65,8 @@ void * agent(void * arg){
             pthread_cond_wait(&agent_c, &m);
         
         int n = getRand(3);
+        
+        printf("NEW AGENT\n");
         
         //agent has paper and match
         if (n == 0) {
@@ -238,17 +247,29 @@ void * smoker_match(void * arg){
 int main(int argc, char *argv[])
 {
     // p_threads for running the agent and smoker processes with semaphores
-    pthread_t agent_t, smoker_tobacco_t, smoker_paper_t, smoker_match_t, pusher_tobacco_t, pusher_paper_t, pusher_match_t;
+    pthread_t agent_t_one, agent_t_two, agent_t_three,
+    smoker_tobacco_t_one, smoker_paper_t_one, smoker_match_t_one, smoker_tobacco_t_two, smoker_paper_t_two, smoker_match_t_two,
+    pusher_tobacco_t, pusher_paper_t, pusher_match_t;
     
     // random seed
     time_t t;
     srand((unsigned) time(&t));
     
-    if (pthread_create(&agent_t, NULL, agent, NULL) != 0) {
+    if (pthread_create(&agent_t_one, NULL, agent, NULL) != 0) {
         fprintf (stderr, "Unable to create thread\n");
         exit(1);
     }
     
+    if (pthread_create(&agent_t_two, NULL, agent, NULL) != 0) {
+        fprintf (stderr, "Unable to create thread\n");
+        exit(1);
+    }
+    
+    if (pthread_create(&agent_t_three, NULL, agent, NULL) != 0) {
+        fprintf (stderr, "Unable to create thread\n");
+        exit(1);
+    }
+
     if (pthread_create(&pusher_tobacco_t, NULL, pusher_tobacco, NULL) != 0) {
         fprintf (stderr, "Unable to create thread\n");
         exit(1);
@@ -264,27 +285,47 @@ int main(int argc, char *argv[])
         exit(1);
     }
     
-    if (pthread_create(&smoker_tobacco_t, NULL, smoker_tobacco, NULL) != 0) {
+    if (pthread_create(&smoker_tobacco_t_one, NULL, smoker_tobacco, NULL) != 0) {
         fprintf (stderr, "Unable to create thread\n");
         exit(1);
     }
     
-    if (pthread_create(&smoker_paper_t, NULL, smoker_paper, NULL) != 0) {
+    if (pthread_create(&smoker_paper_t_one, NULL, smoker_paper, NULL) != 0) {
         fprintf (stderr, "Unable to create thread\n");
         exit(1);
     }
     
-    if (pthread_create(&smoker_match_t, NULL, smoker_match, NULL) != 0) {
+    if (pthread_create(&smoker_match_t_one, NULL, smoker_match, NULL) != 0) {
         fprintf (stderr, "Unable to create thread\n");
         exit(1);
     }
     
-    pthread_join(agent_t, NULL);
+    if (pthread_create(&smoker_tobacco_t_two, NULL, smoker_tobacco, NULL) != 0) {
+        fprintf (stderr, "Unable to create thread\n");
+        exit(1);
+    }
+    
+    if (pthread_create(&smoker_paper_t_two, NULL, smoker_paper, NULL) != 0) {
+        fprintf (stderr, "Unable to create thread\n");
+        exit(1);
+    }
+    
+    if (pthread_create(&smoker_match_t_two, NULL, smoker_match, NULL) != 0) {
+        fprintf (stderr, "Unable to create thread\n");
+        exit(1);
+    }
+    
+    pthread_join(agent_t_one, NULL);
+    pthread_join(agent_t_two, NULL);
+    pthread_join(agent_t_three, NULL);
     pthread_join(pusher_tobacco_t, NULL);
     pthread_join(pusher_paper_t, NULL);
     pthread_join(pusher_match_t, NULL);
-    pthread_join(smoker_tobacco_t, NULL);
-    pthread_join(smoker_paper_t, NULL);
-    pthread_join(smoker_match_t, NULL);
+    pthread_join(smoker_tobacco_t_one, NULL);
+    pthread_join(smoker_paper_t_one, NULL);
+    pthread_join(smoker_match_t_one, NULL);
+    pthread_join(smoker_tobacco_t_two, NULL);
+    pthread_join(smoker_paper_t_two, NULL);
+    pthread_join(smoker_match_t_two, NULL);
 
 }
