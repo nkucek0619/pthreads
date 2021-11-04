@@ -3,14 +3,14 @@
 
     Author: Nicholas Kucek
     
-    Date Completed: 10/31/21
+    Date Completed: 11/04/21
     
     SUMMARY:
     -3 agent threads
     -3 pushers
     -6 smokers: 2 tobacco, 2 papers, 2 matches
     -Each smoker finishes 3 cigarettes before exiting
-    -Rather than loop forever, each agent loops 6 times, and each pusher 12 times.
+    -Rather than loop forever, each agent loops 6 times, and each pusher 12 times
 */
 
 
@@ -34,15 +34,16 @@ pthread_cond_t tobacco = PTHREAD_COND_INITIALIZER;
 pthread_cond_t paper = PTHREAD_COND_INITIALIZER;
 pthread_cond_t match = PTHREAD_COND_INITIALIZER;
 
+// semaphores
 int has_tobacco = 0;
 int has_paper = 0;
 int has_match = 0;
-
 int agent_job = 1;
 int smoker_tobacco_job = 0;
 int smoker_match_job = 0;
 int smoker_paper_job = 0;
 
+// random function for agent to randomly generate two ingredients
 int getRand(int range) {
     
     int n = rand() % range;
